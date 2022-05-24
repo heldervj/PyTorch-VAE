@@ -10,19 +10,36 @@ from torchvision import transforms
 from torchvision.datasets import CelebA
 import zipfile
 
+from skimage import io, transform
+from PIL import Image
+import PIL.ImageEnhance as ie
+import PIL.Image as im
+from torch.autograd import Variable
+
+import numpy as np
+import pandas as pd
 
 # Add your custom dataset class here
-class MyDataset(Dataset):
-    def __init__(self):
-        pass
+class ImageDataset(Dataset): 
     
-    
-    def __len__(self):
-        pass
-    
-    def __getitem__(self, idx):
-        pass
+    def __init__(self, csv_file, data_path, transform=None):
+        self.data_frame = pd.read_csv(csv_file)
+        self.root_dir = data_path
+        self.transform = transform
 
+    def __len__(self):
+        return len(self.data_frame)
+
+    def __getitem__(self, idx):
+        # Id = File
+        # Category = Category_Id
+        img_name = os.path.join(self.root_dir, self.data_frame['File'][idx])         
+        image = Image.open(img_name).convert('RGB')                               
+        label = np.array(self.data_frame['Category_Id'][idx])                        
+        if self.transform:            
+            image = self.transform(image)                                         
+        sample = (image, label) 
+        return sample
 
 class MyCelebA(CelebA):
     """
@@ -96,6 +113,7 @@ class VAEDataset(LightningDataModule):
         self.patch_size = patch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
+        self.csv_file = kwargs['csv_file']
 
     def setup(self, stage: Optional[str] = None) -> None:
 #       =========================  OxfordPets Dataset  =========================
@@ -130,25 +148,29 @@ class VAEDataset(LightningDataModule):
                                               transforms.CenterCrop(148),
                                               transforms.Resize(self.patch_size),
                                               transforms.ToTensor(),])
+
+        # train_transforms = None
         
         val_transforms = transforms.Compose([transforms.RandomHorizontalFlip(),
                                             transforms.CenterCrop(148),
                                             transforms.Resize(self.patch_size),
                                             transforms.ToTensor(),])
         
-        self.train_dataset = MyCelebA(
+        self.train_dataset = ImageDataset(
+            self.csv_file,
             self.data_dir,
-            split='train',
             transform=train_transforms,
-            download=False,
         )
+
+        print(self.data_dir)
+
+        print(len(self.train_dataset))
         
         # Replace CelebA with your dataset
-        self.val_dataset = MyCelebA(
+        self.val_dataset = ImageDataset(
+            self.csv_file,
             self.data_dir,
-            split='test',
             transform=val_transforms,
-            download=False,
         )
 #       ===============================================================
         

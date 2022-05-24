@@ -1,11 +1,12 @@
 model_params:
   name: 'VanillaVAE'
   in_channels: 3
-  latent_dim: 128
+  latent_dim: 256
 
 
 data_params:
-  data_path: "Data/"
+  data_path: "Images/"
+  csv_file: "Train.csv"
   train_batch_size: 64
   val_batch_size:  64
   patch_size: 64
@@ -20,7 +21,7 @@ exp_params:
   manual_seed: 1265
 
 trainer_params:
-  gpus: [1]
+  gpus: [0]
   max_epochs: 100
 
 logging_params:
