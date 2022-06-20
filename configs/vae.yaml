@@ -6,7 +6,8 @@ model_params:
 
 data_params:
   data_path: "Images/"
-  csv_file: "Train.csv"
+  csv_file_train: "Train.csv"
+  csv_file_valid: "Valid.csv"
   train_batch_size: 64
   val_batch_size:  64
   patch_size: 64
