@@ -76,6 +76,13 @@ class VAEXperiment(pl.LightningModule):
                           normalize=True,
                           nrow=12)
 
+        vutils.save_image(test_input,
+                          os.path.join(self.logger.log_dir , 
+                                       "Originals", 
+                                       f"original_{self.logger.name}_Epoch_{self.current_epoch}.png"),
+                          normalize=True,
+                          nrow=12)
+
         try:
             samples = self.model.sample(144,
                                         self.curr_device,

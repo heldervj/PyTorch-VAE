@@ -4,7 +4,8 @@ model_params:
   latent_dim: 128
 
 data_params:
-  data_path: "Data/"
+  data_path: "Images/"
+  csv_file: "Train.csv"
   train_batch_size: 64
   val_batch_size:  64
   patch_size: 64
@@ -14,13 +15,13 @@ data_params:
 exp_params:
   LR: 0.005
   weight_decay: 0.0
-  scheduler_gamma: 0.95
+  scheduler_gamma: 1.0
   kld_weight: 0.00025
   manual_seed: 1265
 
 trainer_params:
-  gpus: [1]
-  max_epochs: 10
+  gpus: [0]
+  max_epochs: 1500
 
 logging_params:
   save_dir: "logs/"

@@ -113,7 +113,8 @@ class VAEDataset(LightningDataModule):
         self.patch_size = patch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
-        self.csv_file = kwargs['csv_file']
+        self.csv_file_train = kwargs['csv_file_train']
+        self.csv_file_valid = kwargs['csv_file_valid']
 
     def setup(self, stage: Optional[str] = None) -> None:
 #       =========================  OxfordPets Dataset  =========================
@@ -157,7 +158,7 @@ class VAEDataset(LightningDataModule):
                                             transforms.ToTensor(),])
         
         self.train_dataset = ImageDataset(
-            self.csv_file,
+            self.csv_file_train,
             self.data_dir,
             transform=train_transforms,
         )
@@ -168,7 +169,7 @@ class VAEDataset(LightningDataModule):
         
         # Replace CelebA with your dataset
         self.val_dataset = ImageDataset(
-            self.csv_file,
+            self.csv_file_valid,
             self.data_dir,
             transform=val_transforms,
         )
