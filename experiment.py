@@ -41,6 +41,7 @@ class VAEXperiment(pl.LightningModule):
                                               optimizer_idx=optimizer_idx,
                                               batch_idx = batch_idx)
 
+        # print(results[0])
         self.log_dict({key: val.item() for key, val in train_loss.items()}, sync_dist=True)
 
         return train_loss['loss']
@@ -64,8 +65,12 @@ class VAEXperiment(pl.LightningModule):
     def sample_images(self):
         # Get sample reconstruction image            
         test_input, test_label = next(iter(self.trainer.datamodule.test_dataloader()))
+        test_input = test_input[:6]
+        test_label = test_input[:6]
         test_input = test_input.to(self.curr_device)
         test_label = test_label.to(self.curr_device)
+
+    
 
 #         test_input, test_label = batch
         recons = self.model.generate(test_input, labels = test_label)
@@ -84,7 +89,7 @@ class VAEXperiment(pl.LightningModule):
                           nrow=12)
 
         try:
-            samples = self.model.sample(144,
+            samples = self.model.sample(6,
                                         self.curr_device,
                                         labels = test_label)
             vutils.save_image(samples.cpu().data,
